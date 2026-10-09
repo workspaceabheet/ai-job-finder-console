@@ -1,5 +1,6 @@
 import os
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
@@ -18,7 +19,11 @@ from app.routers import settings as settings_router
 from app.session_port import SessionManager
 from app.sourcing.real_sourcing import RealSourcingPort
 
-templates = Jinja2Templates(directory="templates")
+# Resolved against this file's location (inside the installed package), not
+# the process's cwd -- so templates/static are found regardless of where
+# `job-search-console` is launched from.
+PACKAGE_DIR = Path(__file__).resolve().parent
+templates = Jinja2Templates(directory=PACKAGE_DIR / "templates")
 
 # Agent-port wiring (module-level singletons). Slice 4 replaced sourcing_port
 # with real Greenhouse/Lever/Ashby + Brave Search sourcing; V4 replaced
@@ -77,8 +82,8 @@ def create_app(
     app.include_router(run_router.router, prefix="/api")
     app.include_router(chat_router.router, prefix="/api")
     # UI assets: no secrets, so no verify_request (the token lives only in the
-    # <meta> tag rendered by GET /). Relative to cwd, like templates/.
-    app.mount("/static", StaticFiles(directory="static"), name="static")
+    # <meta> tag rendered by GET /). Resolved against PACKAGE_DIR, like templates/.
+    app.mount("/static", StaticFiles(directory=PACKAGE_DIR / "static"), name="static")
 
     # The ONLY route exempt from verify_request: it is how the UI bootstraps the token.
     @app.get("/", response_class=HTMLResponse)
@@ -91,3 +96,14 @@ def create_app(
 
 
 app = create_app()
+
+
+def run() -> None:
+    """Console-script entry point (see [project.scripts] in pyproject.toml)."""
+    import uvicorn
+
+    uvicorn.run(
+        "app.main:app",
+        host="127.0.0.1",
+        port=int(os.environ.get("PORT", "8000")),
+    )

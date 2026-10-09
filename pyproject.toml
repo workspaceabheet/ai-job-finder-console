@@ -1,3 +1,30 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "job-search-console"
+version = "0.1.0"
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi==0.142.2",
+    "uvicorn[standard]==0.54.0",
+    "jinja2==3.1.6",
+    "pydantic==2.13.5",
+    "python-multipart==0.0.32",
+    "PyMuPDF==1.28.2",
+    "python-docx==1.2.0",
+    "rapidfuzz==3.14.6",
+    "httpx==0.28.1",
+    "claude-agent-sdk==0.2.163",
+]
+
+[project.scripts]
+job-search-console = "app.main:run"
+
+[tool.hatch.build.targets.wheel]
+packages = ["app"]
+
 [tool.pytest.ini_options]
 pythonpath = ["."]
 testpaths = ["tests"]

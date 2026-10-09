@@ -1,7 +1,13 @@
 import os
 from pathlib import Path
 
-DATA_DIR = Path("data")
+# Stable, cwd-independent data location so an installed `job-search-console`
+# command works the same regardless of the directory it's launched from.
+# Override with JOB_CONSOLE_DATA_DIR (e.g. for dev/test to keep using a local
+# "data" dir without touching ~/.job-search-console).
+DATA_DIR = Path(
+    os.environ.get("JOB_CONSOLE_DATA_DIR") or Path.home() / ".job-search-console"
+)
 DB_PATH = DATA_DIR / "app.db"
 TOKEN_FILE_PATH = DATA_DIR / ".session_token"
 RESUME_DIR = DATA_DIR / "resume"  # populated in S2; directory itself ensured at startup

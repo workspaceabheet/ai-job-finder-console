@@ -32,19 +32,27 @@ machine except the requests to source job boards and to Claude for scoring.
   discovering companies beyond the built-in seed list. Without one, the app
   falls back to a small hardcoded list of known companies.
 
-## Setup
+## Install (recommended)
+
+One command, no manual venv/Python-version management — `uv` provisions
+Python 3.13 itself if you don't already have it:
 
 ```zsh
-cd job-search-console
-python3 -m venv .venv
-.venv/bin/pip install -r requirements.txt
-claude login   # if you haven't already
+curl -LsSf https://astral.sh/uv/install.sh | sh    # one-time, if you don't have uv
+uv tool install git+https://github.com/workspaceabheet/ai-job-finder-console
+claude login   # one-time per machine, if you haven't already
+```
+
+Don't have/want `uv`? `pipx` works the same way:
+
+```zsh
+pipx install git+https://github.com/workspaceabheet/ai-job-finder-console
 ```
 
 ## Run
 
 ```zsh
-.venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8000
+job-search-console
 ```
 
 Open `http://127.0.0.1:8000/`. The app binds to localhost only — it's not
@@ -55,10 +63,22 @@ Optional environment variables:
 - `JOB_CONSOLE_MODEL` — override the scoring model (defaults to
   `claude-haiku-4-5-20251001`, chosen for speed/cost; Sonnet and Opus also
   tested and work, just slower).
+- `JOB_CONSOLE_DATA_DIR` — where your resume, settings, session token, and
+  SQLite DB are stored. Defaults to `~/.job-search-console/`.
+- `PORT` — override the port (default `8000`).
 
 ## Development
 
+For contributing / hacking on the source instead of just running it:
+
 ```zsh
+git clone https://github.com/workspaceabheet/ai-job-finder-console
+cd ai-job-finder-console
+python3 -m venv .venv
+.venv/bin/pip install -r requirements.txt
+claude login   # if you haven't already
+
+.venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8000   # run from source
 .venv/bin/pytest tests/
 .venv/bin/ruff check app tests
 .venv/bin/ruff format app tests
