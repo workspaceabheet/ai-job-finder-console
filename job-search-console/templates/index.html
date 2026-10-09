@@ -1,0 +1,144 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="app-token" content="{{ app_token }}">
+<title>Job Search Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/static/css/base.css">
+<link rel="stylesheet" href="/static/css/sidebar.css">
+<link rel="stylesheet" href="/static/css/main.css">
+<link rel="stylesheet" href="/static/css/chat.css">
+</head><body>
+<div class="app">
+
+  <!-- ============ SIDEBAR (V1): resume + job preferences ============ -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">JA</div>
+      <div>
+        <div class="brand-name">Job Search Console</div>
+        <div class="brand-sub">one session · local</div>
+      </div>
+    </div>
+
+    <div>
+      <div class="panel-label">Resume</div>
+      <div class="resume-card">
+        <!-- Empty state: no resume uploaded yet (AC1) -->
+        <div id="resume-empty" class="resume-empty" hidden>
+          <div class="resume-row">
+            <div class="resume-icon">—</div>
+            <div class="resume-empty-text"><b>No resume uploaded yet.</b><br>Upload one so runs can score listings against it. PDF, DOCX, TXT or MD.</div>
+          </div>
+          <button id="resume-upload-btn" class="resume-replace" type="button">Upload resume</button>
+        </div>
+        <!-- Filled state: current resume (AC2) -->
+        <div id="resume-filled" hidden>
+          <div class="resume-row">
+            <div id="resume-icon" class="resume-icon">PDF</div>
+            <div>
+              <div id="resume-name" class="resume-name"></div>
+              <div id="resume-meta" class="resume-meta"></div>
+            </div>
+          </div>
+          <button id="resume-replace-btn" class="resume-replace" type="button">Replace resume…</button>
+        </div>
+        <div id="resume-error" class="resume-error" role="alert" hidden></div>
+        <input id="resume-input" type="file" accept=".pdf,.docx,.txt,.md" hidden>
+      </div>
+    </div>
+
+    <form id="settings-form" class="settings-group" autocomplete="off">
+      <div class="panel-label">Job Preferences <span class="mono panel-tag">base profile</span></div>
+
+      <div class="field">
+        <label for="f-role">Role / title keywords</label>
+        <input id="f-role" name="role_keywords" type="text" placeholder="e.g. Senior Backend Engineer, Platform Engineer">
+      </div>
+
+      <div class="field">
+        <label for="f-seniority">Seniority</label>
+        <select id="f-seniority" name="seniority">
+          <option value="Mid-level">Mid-level</option>
+          <option value="Senior">Senior</option>
+          <option value="Staff / Principal">Staff / Principal</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="f-location">Location preference</label>
+        <input id="f-location" name="location" type="text" placeholder="e.g. Remote (US), or Bangalore hybrid">
+      </div>
+
+      <div class="field">
+        <label for="f-musthave">Must-haves</label>
+        <textarea id="f-musthave" name="must_haves" placeholder="e.g. Equity grant, async-friendly culture"></textarea>
+      </div>
+
+      <div class="field">
+        <label for="f-dealbreaker">Dealbreakers</label>
+        <textarea id="f-dealbreaker" name="dealbreakers" placeholder="e.g. On-site 5 days/week"></textarea>
+      </div>
+
+      <div class="field">
+        <label for="f-notes">Notes</label>
+        <textarea id="f-notes" name="notes" placeholder="Anything else the scorer should know"></textarea>
+      </div>
+
+      <button id="settings-save" class="save-btn" type="submit">Save</button>
+
+      <div id="save-row" class="save-row" data-state="loading" role="status" aria-live="polite"><span class="save-dot"></span> <span id="save-text">Loading…</span></div>
+    </form>
+  </aside>
+
+  <!-- ============ MAIN (V2): topbar + results ============ -->
+  <main class="main">
+    <div class="topbar">
+      <div>
+        <h1>Today's shortlist</h1>
+        <div class="sub" id="last-run-summary">No runs yet.</div>
+      </div>
+      <div>
+        <button class="run-btn" id="run-btn" type="button">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+          <span class="run-label">Run search</span>
+        </button>
+        <div class="run-meta">searches Greenhouse · Lever · Ashby · web discovery</div>
+      </div>
+    </div>
+    <div class="run-progress" id="run-progress" aria-live="polite"></div>
+    <!-- ============ CHAT BOX (V3) ============ -->
+    <div class="chat-box">
+      <div class="chat-status" id="chat-status" role="status" aria-live="polite"></div>
+      <div class="chat-input-row">
+        <input type="text" id="chat-input" maxlength="200" aria-label="Direction for the next run" aria-describedby="chat-error"
+               placeholder='Add a direction for the next run — e.g. "prioritize fintech companies"'>
+        <button class="chat-send" id="chat-send" type="button">Set</button>
+      </div>
+      <div class="chat-error" id="chat-error" role="alert" hidden></div>
+      <div class="chat-history">
+        <div class="chat-history-label">Session history · replaces, doesn't accumulate</div>
+        <div class="chat-history-list" id="chat-history-list"></div>
+      </div>
+    </div>
+    <div class="results-head">
+      <h2>Results</h2>
+      <span class="count" id="results-count"></span>
+    </div>
+    <div class="legend">
+      <span>Match score</span><span class="legend-bar"></span><span>low → high</span>
+    </div>
+    <div class="grid" id="results-grid"></div>
+    <nav class="pagination" id="pagination" aria-label="Results pages"></nav>
+  </main>
+</div>
+<script src="/static/js/api.js"></script>
+<script src="/static/js/resume.js"></script>
+<script src="/static/js/settings.js"></script>
+<script src="/static/js/results.js"></script>
+<script src="/static/js/chat.js"></script>
+<script src="/static/js/run.js"></script>
+<script src="/static/js/main.js"></script>
+</body></html>

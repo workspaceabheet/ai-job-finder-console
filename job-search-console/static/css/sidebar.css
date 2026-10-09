@@ -1,0 +1,240 @@
+/* Sidebar: brand, resume card, job-preferences form, save-row.
+   Lifted near-verbatim from the wireframe; additions are marked. */
+.sidebar {
+  border-right: 1px solid var(--border);
+  padding: 20px 18px 40px;
+  background: var(--surface);
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+@media (max-width: 860px) {
+  .sidebar {
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 2px;
+}
+.brand-mark {
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  background: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-contrast);
+  font-weight: 700;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+.brand-name {
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: -0.01em;
+}
+.brand-sub {
+  font-size: 11px;
+  color: var(--text-faint);
+  margin-top: 1px;
+}
+
+.panel-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.panel-label .panel-tag {
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+/* ---------- Resume card ---------- */
+.resume-card {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+  background: var(--surface-sunken);
+}
+.resume-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.resume-icon {
+  width: 30px;
+  height: 34px;
+  flex-shrink: 0;
+  border-radius: 4px;
+  background: var(--accent-soft);
+  color: var(--accent-ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+}
+.resume-name {
+  font-weight: 600;
+  font-size: 12.5px;
+  word-break: break-word;
+}
+.resume-meta {
+  font-size: 11px;
+  color: var(--text-faint);
+  margin-top: 2px;
+}
+.resume-replace {
+  margin-top: 10px;
+  width: 100%;
+  padding: 7px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: inherit;
+  border: 1px solid var(--border-strong);
+  border-radius: 7px;
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+}
+.resume-replace:hover {
+  border-color: var(--accent);
+}
+.resume-replace:disabled {
+  cursor: progress;
+  opacity: 0.6;
+}
+
+/* Addition: empty state (no resume yet) */
+.resume-empty .resume-icon {
+  background: var(--surface);
+  color: var(--text-faint);
+  border: 1px dashed var(--border-strong);
+}
+.resume-empty-text {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+.resume-empty-text b {
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* Addition: inline upload error (AC3) */
+.resume-error {
+  margin-top: 8px;
+  font-size: 11.5px;
+  line-height: 1.4;
+  color: var(--danger);
+  background: var(--danger-soft);
+  border-radius: 7px;
+  padding: 7px 9px;
+}
+
+/* ---------- Settings form ---------- */
+.settings-group {
+  border-top: 1px solid var(--border);
+  padding-top: 18px;
+}
+.field {
+  margin-bottom: 12px;
+}
+.field label {
+  display: block;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 5px;
+}
+.field input[type="text"],
+.field textarea,
+.field select {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 7px 9px;
+  font-size: 12.5px;
+  font-family: inherit;
+  background: var(--surface);
+  color: var(--text);
+  resize: vertical;
+}
+.field input[type="text"]:focus,
+.field textarea:focus,
+.field select:focus {
+  outline: 2px solid var(--focus);
+  outline-offset: 1px;
+  border-color: transparent;
+}
+.field textarea {
+  min-height: 46px;
+  line-height: 1.4;
+}
+
+/* Addition: explicit Save button (settings are explicit-save, not autosave) */
+.save-btn {
+  width: 100%;
+  margin-top: 4px;
+  padding: 8px 12px;
+  font-size: 12.5px;
+  font-weight: 700;
+  font-family: inherit;
+  border: none;
+  border-radius: 7px;
+  background: var(--accent);
+  color: var(--accent-contrast);
+  cursor: pointer;
+}
+.save-btn:hover {
+  background: var(--accent-ink);
+}
+.save-btn:disabled {
+  cursor: progress;
+  opacity: 0.6;
+}
+
+.save-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11px;
+  color: var(--text-faint);
+  margin-top: 14px;
+}
+.save-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgb(var(--score-g));
+  flex-shrink: 0;
+}
+/* Addition: save-row states beyond the wireframe's single "saved" state */
+.save-row[data-state="default"] .save-dot {
+  background: rgb(var(--score-y));
+}
+.save-row[data-state="dirty"] .save-dot,
+.save-row[data-state="saving"] .save-dot {
+  background: var(--text-faint);
+}
+.save-row[data-state="error"] {
+  color: var(--danger);
+}
+.save-row[data-state="error"] .save-dot {
+  background: rgb(var(--score-r));
+}

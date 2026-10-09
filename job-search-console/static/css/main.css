@@ -1,0 +1,369 @@
+/* Main column (V2): topbar, run progress/notices, results grid, pagination.
+   Lifted near-verbatim from the wireframe; additions are marked. */
+
+/* ---------- Topbar ---------- */
+.topbar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+.topbar h1 {
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin: 0 0 3px;
+}
+.topbar .sub {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.run-btn {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  background: var(--accent);
+  color: var(--accent-contrast);
+  border: none;
+  padding: 12px 22px;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: inherit;
+  border-radius: 9px;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12), 0 4px 14px -6px rgba(32, 58, 92, 0.55);
+  flex-shrink: 0;
+  letter-spacing: 0.01em;
+  margin-left: auto;
+}
+.run-btn:hover {
+  background: var(--accent-ink);
+}
+.run-btn svg {
+  flex-shrink: 0;
+}
+/* Addition: busy state while a run is in flight (AC17) */
+.run-btn:disabled {
+  cursor: progress;
+  opacity: 0.7;
+}
+.run-btn:disabled:hover {
+  background: var(--accent);
+}
+.run-btn .spinner {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  animation: run-spin 0.8s linear infinite;
+}
+@keyframes run-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.run-meta {
+  font-size: 11px;
+  color: var(--text-faint);
+  margin-top: 7px;
+  text-align: right;
+}
+
+/* ---------- Addition: run progress + notices ---------- */
+.run-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+.run-progress:empty {
+  display: none;
+}
+.notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 12.5px;
+  line-height: 1.45;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-muted);
+  border-radius: 9px;
+  padding: 9px 12px;
+}
+.notice .ni {
+  flex-shrink: 0;
+  opacity: 0.75;
+}
+.notice .nt {
+  flex: 1;
+  min-width: 0;
+}
+.notice b {
+  color: var(--text);
+  font-weight: 600;
+}
+.notice-progress .bar {
+  margin-top: 6px;
+  height: 5px;
+  border-radius: 4px;
+  background: var(--surface-sunken);
+  overflow: hidden;
+}
+.notice-progress .bar > span {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: var(--accent);
+  transition: width 0.2s ease;
+}
+.notice-warn {
+  background: var(--surface-sunken);
+}
+.notice-error {
+  color: var(--danger);
+  background: var(--danger-soft);
+  border-color: transparent;
+}
+.notice-error b {
+  color: var(--danger);
+}
+.notice a,
+.notice .link-btn {
+  color: var(--accent-ink);
+  font-weight: 600;
+}
+.link-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.notice-dismiss {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: inherit;
+  font: inherit;
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0.6;
+  padding: 0 2px;
+}
+.notice-dismiss:hover {
+  opacity: 1;
+}
+
+/* ---------- Results ---------- */
+.results-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.results-head h2 {
+  font-size: 14.5px;
+  font-weight: 700;
+  margin: 0;
+}
+.results-head .count {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.legend {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10.5px;
+  color: var(--text-faint);
+  margin-bottom: 16px;
+}
+.legend-bar {
+  width: 90px;
+  height: 6px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, rgb(var(--score-r)), rgb(var(--score-y)), rgb(var(--score-g)));
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+@media (max-width: 760px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+/* Addition: empty grid message */
+.grid-empty {
+  grid-column: 1 / -1;
+  border: 1px dashed var(--border-strong);
+  border-radius: 12px;
+  padding: 22px 16px;
+  text-align: center;
+  font-size: 12.5px;
+  color: var(--text-faint);
+}
+
+.card {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 15px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.card-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+.card-title-block {
+  min-width: 0;
+}
+.card-title {
+  font-size: 14.5px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin: 0 0 2px;
+  overflow-wrap: anywhere;
+}
+.card-company {
+  font-size: 12.5px;
+  color: var(--text);
+  font-weight: 600;
+}
+.card-location {
+  font-size: 11.5px;
+  color: var(--text-faint);
+  margin-top: 1px;
+}
+
+.score-pill {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 54px;
+}
+.score-num {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 15px;
+  font-variant-numeric: tabular-nums;
+}
+.score-track {
+  width: 52px;
+  height: 6px;
+  border-radius: 4px;
+  background: var(--surface-sunken);
+  overflow: hidden;
+}
+.score-fill {
+  height: 100%;
+  border-radius: 4px;
+}
+
+.card-desc {
+  font-size: 12.5px;
+  color: var(--text-muted);
+  line-height: 1.45;
+  /* Addition: real postings can be long; keep cards scannable */
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+}
+
+.gap-note {
+  display: flex;
+  gap: 6px;
+  font-size: 11.5px;
+  color: var(--text-muted);
+  background: var(--surface-sunken);
+  border-radius: 7px;
+  padding: 7px 9px;
+  line-height: 1.4;
+}
+.gap-note .gi {
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+.gap-note b {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.card-foot {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-top: auto;
+  padding-top: 2px;
+}
+.apply-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--accent);
+  color: var(--accent-contrast);
+  font-size: 12.5px;
+  font-weight: 700;
+  padding: 8px 14px;
+  border-radius: 7px;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+}
+.apply-btn:hover {
+  background: var(--accent-ink);
+}
+
+/* ---------- Addition: pagination (not in the wireframe; reuses the
+   .resume-replace secondary-button look) ---------- */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 20px;
+}
+.pagination:empty {
+  display: none;
+}
+.page-btn {
+  padding: 7px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: inherit;
+  border: 1px solid var(--border-strong);
+  border-radius: 7px;
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+}
+.page-btn:hover:not(:disabled) {
+  border-color: var(--accent);
+}
+.page-btn:disabled {
+  cursor: default;
+  opacity: 0.45;
+}
+.page-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}

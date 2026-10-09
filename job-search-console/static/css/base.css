@@ -1,0 +1,113 @@
+/* Shared design tokens + layout grid. Ported from the signed-off wireframe's
+   :root block. Every later slice's CSS builds on these custom properties. */
+:root {
+  --bg: #f5f4f0;
+  --surface: #ffffff;
+  --surface-sunken: #eceae4;
+  --border: #ddd9d0;
+  --border-strong: #c7c2b6;
+  --text: #201e1a;
+  --text-muted: #6d6a62;
+  --text-faint: #96928a;
+  --accent: #203a5c;
+  --accent-ink: #15263d;
+  --accent-soft: #e4e9f0;
+  --accent-contrast: #ffffff;
+  --score-r: 213, 70, 63;
+  --score-y: 224, 178, 60;
+  --score-g: 47, 140, 90;
+  --focus: #203a5c;
+  --danger: #b3362f;
+  --danger-soft: #f8e6e4;
+  --font-sans: "Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #15171c;
+    --surface: #1d2026;
+    --surface-sunken: #262933;
+    --border: #333744;
+    --border-strong: #454a59;
+    --text: #ecebe7;
+    --text-muted: #a3a29c;
+    --text-faint: #75746d;
+    --accent: #7c9cc9;
+    --accent-ink: #cfe0f5;
+    --accent-soft: #28344a;
+    --accent-contrast: #0e1016;
+    --focus: #7c9cc9;
+    --danger: #e8837c;
+    --danger-soft: #3a2224;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg: #15171c;
+  --surface: #1d2026;
+  --surface-sunken: #262933;
+  --border: #333744;
+  --border-strong: #454a59;
+  --text: #ecebe7;
+  --text-muted: #a3a29c;
+  --text-faint: #75746d;
+  --accent: #7c9cc9;
+  --accent-ink: #cfe0f5;
+  --accent-soft: #28344a;
+  --accent-contrast: #0e1016;
+  --focus: #7c9cc9;
+  --danger: #e8837c;
+  --danger-soft: #3a2224;
+  color-scheme: dark;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+.mono {
+  font-family: var(--font-mono);
+}
+
+.app {
+  display: grid;
+  grid-template-columns: 300px minmax(0, 1fr);
+  min-height: 100vh;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+@media (max-width: 860px) {
+  .app {
+    grid-template-columns: 1fr;
+  }
+}
+
+.main {
+  padding: 20px 28px 60px;
+  min-width: 0;
+}
