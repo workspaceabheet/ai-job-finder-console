@@ -1,3 +1,4 @@
+import logging
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Annotated
@@ -8,6 +9,8 @@ from pydantic import BaseModel
 from app import config, resume_extract, resume_store
 from app.auth import verify_request
 from app.db import db_session
+
+log = logging.getLogger(__name__)
 
 router = APIRouter(dependencies=[Depends(verify_request)])
 
@@ -61,6 +64,18 @@ async def upload_resume(file: Annotated[UploadFile, File()]) -> ResumeStatus:
             except Exception as err:
                 # Corrupt/mislabelled file (e.g. a .png renamed to .pdf): reject
                 # before anything is written, leaving the stored resume untouched.
+                # Log the real exception (type/message + filename/ext only --
+                # never the file bytes/content) so a genuinely corrupt upload
+                # can be diagnosed after the fact; the 422 response itself
+                # stays generic.
+                log.warning(
+                    "resume upload rejected: could not extract text from "
+                    "'%s' (ext=%s): %s: %s",
+                    filename,
+                    ext,
+                    type(err).__name__,
+                    err,
+                )
                 raise HTTPException(
                     status_code=422,
                     detail=f"Could not read '{filename}' as a {ext} file. "

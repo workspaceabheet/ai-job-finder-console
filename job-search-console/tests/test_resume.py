@@ -137,19 +137,27 @@ def test_ac3_png_rejected(client, token, resume_dir):
     assert sorted(p.name for p in resume_dir.iterdir()) == ["raw.docx"]
 
 
-def test_ac3_corrupt_pdf_rejected_existing_untouched(client, token, resume_dir):
+def test_ac3_corrupt_pdf_rejected_existing_untouched(client, token, resume_dir, caplog):
     """A .png renamed to .pdf passes the extension check but fails extraction;
-    it must still be rejected before anything is written."""
+    it must still be rejected before anything is written. Fix 3 (Stage 8
+    review): this failure must also be logged server-side (filename + the
+    real exception type/message), not swallowed silently."""
     assert _upload(client, "sample.txt").status_code == 201
     _, rec_before = _stored()
 
-    r = _upload(client, "sample.png", as_name="resume.pdf")
+    with caplog.at_level("WARNING"):
+        r = _upload(client, "sample.png", as_name="resume.pdf")
     assert r.status_code == 422
     _assert_rejection_message(r.json()["detail"])
 
     _, rec_after = _stored()
     assert rec_after == rec_before
     assert sorted(p.name for p in resume_dir.iterdir()) == ["raw.txt"]
+
+    assert any(
+        "resume.pdf" in rec.message and "rejected" in rec.message
+        for rec in caplog.records
+    )
 
 
 def test_ac3_validate_extension_unit():

@@ -528,7 +528,7 @@ def test_ac16_mechanic_pervasive_failure_message(conn):
     assert _complete(events)["results"] == []
 
 
-def test_total_sourcing_failure_marks_run_error(conn):
+def test_total_sourcing_failure_marks_run_error(conn, caplog):
     seed_resume()
     session = FakeSessionManager()
     orch = RunOrchestrator(
@@ -537,11 +537,18 @@ def test_total_sourcing_failure_marks_run_error(conn):
         session,
         conn,
     )
-    events = collect(orch)
+    with caplog.at_level("ERROR"):
+        events = collect(orch)
     assert [e.event for e in events] == ["source_started", "run_error"]
     assert "all sources down" in events[-1].data["reason"]
     assert conn.execute("SELECT status FROM run_history").fetchone()[0] == "error"
     assert session._runs_since_reset == 1  # note_run_completed on error too
+    # Fix 3 (Stage 8 review): a total run failure must be logged server-side
+    # -- otherwise, with nobody listening on the SSE stream, the reason is
+    # lost entirely.
+    assert any(
+        "failed" in rec.message and rec.exc_info is not None for rec in caplog.records
+    )
 
 
 def test_within_run_cross_source_dedup_before_scoring(conn):

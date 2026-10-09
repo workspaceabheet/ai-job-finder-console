@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 DATA_DIR = Path("data")
@@ -7,5 +8,9 @@ RESUME_DIR = DATA_DIR / "resume"  # populated in S2; directory itself ensured at
 
 AUTH_HEADER_NAME = "X-App-Token"
 ALLOWED_HOSTS = {"127.0.0.1", "localhost"}
-# Set at startup from the bound port; None means "any port on an allowed host".
-ALLOWED_PORT = None
+# The app has no way to introspect the port uvicorn actually bound to from
+# within its own startup code, so the PORT env var is the source of truth for
+# both: the run command (`uvicorn app.main:app --port $PORT`) and this value,
+# which auth.py's Origin/Host check compares against. Default matches the
+# documented `uvicorn ... --port 8000` run command in main.py.
+ALLOWED_PORT = int(os.environ.get("PORT", "8000"))

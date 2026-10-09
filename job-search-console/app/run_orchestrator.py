@@ -1,4 +1,5 @@
 import json
+import logging
 import sqlite3
 from collections.abc import AsyncIterator
 from dataclasses import dataclass
@@ -14,6 +15,8 @@ from app.ports import (
     SubScores,
 )
 from app.session_port import SessionManager
+
+log = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True)
@@ -229,7 +232,13 @@ class RunOrchestrator:
             )
         # Total sourcing-layer failure (the only exception SourcingPort may raise)
         # or an unexpected bug: the run ends as 'error' with a run_error event.
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
+            # This is the worst-case outcome a user can hit (zero results),
+            # and if nothing is listening on the SSE stream right now, the
+            # run_error event below is the ONLY place this failure reason
+            # would otherwise ever surface -- log it server-side (with
+            # traceback) so it's not lost if that happens.
+            log.exception("run %s failed", run_id)
             self.conn.rollback()
             self._mark_error(run_id)
             if not noted:

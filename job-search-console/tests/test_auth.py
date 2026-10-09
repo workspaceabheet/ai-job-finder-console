@@ -42,6 +42,25 @@ def test_forged_host_rejected_when_origin_absent(client, token):
     assert r.status_code == 403
 
 
+def test_correct_hostname_wrong_port_rejected(client, token):
+    # Same allowed hostname (127.0.0.1), but a different port -- e.g. some
+    # other local dev server on the user's machine. ALLOWED_PORT must reject
+    # this even though the hostname check alone would pass it.
+    r = client.get(
+        "/api/settings",
+        headers={"X-App-Token": token, "Origin": "http://127.0.0.1:9999"},
+    )
+    assert r.status_code == 403
+
+
+def test_correct_hostname_wrong_port_rejected_via_host_fallback(client, token):
+    r = client.get(
+        "/api/settings",
+        headers={"X-App-Token": token, "Host": "127.0.0.1:9999"},
+    )
+    assert r.status_code == 403
+
+
 def test_index_embeds_token_and_token_file_is_0600(client, token, data_dir):
     r = client.get("/")
     assert r.status_code == 200

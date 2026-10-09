@@ -34,8 +34,11 @@ sourcing_port: SourcingPort = RealSourcingPort(
 session_manager: SessionManager = ClaudeSessionManager()
 scoring_port: ScoringPort = ClaudeScoringPort(session_manager)
 
-# Run with:  uvicorn app.main:app --host 127.0.0.1 --port 8000
+# Run with:  uvicorn app.main:app --host 127.0.0.1 --port ${PORT:-8000}
 # Never bind 0.0.0.0 -- the app must only be reachable from this machine.
+# The PORT env var (default 8000) must match the --port flag above: it is
+# also what app/config.py reads into ALLOWED_PORT, which auth.py's
+# Origin/Host check pins against (see app/config.py, app/auth.py).
 
 
 @asynccontextmanager
